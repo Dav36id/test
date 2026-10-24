@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Conjunció Galàctica Reus 🪐✨</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --space-dark: #0c0817;
+      --card-bg: rgba(255, 255, 255, 0.06);
+      --card-border: rgba(255, 255, 255, 0.12);
+      --pink-galaxy: #ff60a8;
+      --purple-galaxy: #9d4edd;
+      --blue-galaxy: #4cc9f0;
+      --gold: #ffd166;
+      --text: #f8f9fa;
+      --text-muted: #b8b8d2;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Outfit', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--space-dark);
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(157, 78, 221, 0.25) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(255, 96, 168, 0.2) 0%, transparent 40%),
+        radial-gradient(circle at 50% 50%, rgba(76, 201, 240, 0.15) 0%, transparent 50%);
+      background-attachment: fixed;
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* PANTALLA INTRO (SPLASH SCREEN 3s) */
+    #splash-screen {
+      position: fixed;
+      inset: 0;
+      background: #06030d;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
+      transition: opacity 0.8s ease, visibility 0.8s;
+    }
+
+    #splash-screen.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .splash-planet {
+      font-size: 4rem;
+      animation: float 2.5s ease-in-out infinite;
+      margin-bottom: 20px;
+    }
+
+    .splash-title {
+      font-size: clamp(1.8rem, 6vw, 3.2rem);
+      font-weight: 800;
+      letter-spacing: 2px;
+      background: linear-gradient(135deg, #fff, var(--pink-galaxy), var(--blue-galaxy));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-transform: uppercase;
+      margin-bottom: 15px;
+    }
+
+    .splash-loader {
+      width: 140px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 99px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .splash-loader::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; bottom: 0;
+      width: 0%;
+      background: linear-gradient(90deg, var(--pink-galaxy), var(--purple-galaxy));
+      animation: load 3s forwards linear;
+    }
+
+    @keyframes load {
+      to { width: 100%; }
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-15px) rotate(6deg); }
+    }
+
+    /* CONTENIDOR PRINCIPAL */
+    .container {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 30px 20px 80px;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.8s ease;
+    }
+
+    .container.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* HEADER */
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .badge-date {
+      display: inline-block;
+      padding: 6px 16px;
+      background: rgba(255, 96, 168, 0.15);
+      border: 1px solid var(--pink-galaxy);
+      border-radius: 30px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--pink-galaxy);
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+
+    /* CARDS */
+    .day-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-radius: 24px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    .day-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .day-icon {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, var(--pink-galaxy), var(--purple-galaxy));
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+    }
+
+    .day-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+
+    /* TIMELINE */
+    .timeline {
+      list-style: none;
+      position: relative;
+      padding-left: 20px;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 4px;
+      top: 6px;
+      bottom: 6px;
+      width: 2px;
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 16px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: #e2e2ec;
+    }
+
+    .timeline-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -20px;
+      top: 7px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--pink-galaxy);
+      box-shadow: 0 0 10px var(--pink-galaxy);
+    }
+
+    /* SELECTOR SOPAR DIVENDRES */
+    .dinner-selector {
+      margin-top: 15px;
+      padding: 14px;
+      background: rgba(0,0,0,0.25);
+      border-radius: 16px;
+    }
+
+    .selector-label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      display: block;
+      font-weight: 600;
+    }
+
+    .pill-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .pill-btn {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: #fff;
+      padding: 8px 14px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .pill-btn:hover {
+      background: rgba(255,255,255,0.15);
+    }
+
+    .pill-btn.active {
+      background: linear-gradient(135deg, var(--pink-galaxy), var(--purple-galaxy));
+      border-color: transparent;
+      font-weight: 600;
+      box-shadow: 0 4px 15px rgba(255, 96, 168, 0.4);
+    }
+
+    /* OPCIONS DISSABTE */
+    .options-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .option-card {
+      position: relative;
+      padding: 16px;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .option-card:hover {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(255, 255, 255, 0.25);
+      transform: translateY(-2px);
+    }
+
+    .option-card.selected {
+      background: rgba(157, 78, 221, 0.15);
+      border: 1.5px solid var(--pink-galaxy);
+      box-shadow: 0 0 20px rgba(255, 96, 168, 0.25);
+    }
+
+    .option-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .option-title {
+      font-weight: 700;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .option-price {
+      background: rgba(255, 209, 102, 0.15);
+      color: var(--gold);
+      border: 1px solid var(--gold);
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .option-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .sub-options {
+      margin-top: 8px;
+      display: flex;
+      gap: 8px;
+      padding-top: 8px;
+      border-top: 1px dashed rgba(255,255,255,0.1);
+    }
+
+    .sub-btn {
+      font-size: 0.75rem;
+      padding: 5px 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.05);
+      color: #fff;
+      cursor: pointer;
+    }
+
+    .sub-btn.active {
+      background: var(--blue-galaxy);
+      color: #0c0817;
+      font-weight: 700;
+      border-color: var(--blue-galaxy);
+    }
+
+    /* SUMMARY / WHATSAPP BOX */
+    .summary-box {
+      margin-top: 30px;
+      background: linear-gradient(135deg, rgba(157,78,221,0.2), rgba(255,96,168,0.2));
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 24px;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .summary-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .summary-text {
+      font-size: 0.92rem;
+      color: #dedee9;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 16px;
+      border-radius: 14px;
+      text-align: left;
+      white-space: pre-line;
+      margin-bottom: 18px;
+      font-family: monospace;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .btn-share {
+      background: linear-gradient(135deg, #25d366, #128c7e);
+      color: white;
+      border: none;
+      padding: 14px 24px;
+      border-radius: 16px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      justify-content: center;
+      box-shadow: 0 8px 25px rgba(37, 211, 102, 0.3);
+      transition: transform 0.2s;
+    }
+
+    .btn-share:hover {
+      transform: scale(1.02);
+    }
+
+    .btn-share:active {
+      transform: scale(0.98);
+    }
+
+    .copied-toast {
+      margin-top: 10px;
+      font-size: 0.85rem;
+      color: #a7f3d0;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .copied-toast.show {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- SPLASH SCREEN (3 SEGONS) -->
+  <div id="splash-screen">
+    <div class="splash-planet">🪐</div>
+    <h1 class="splash-title">Welcome to<br>galactic weekend</h1>
+    <div class="splash-loader"></div>
+  </div>
+
+  <!-- APLICACIÓ PRINCIPAL -->
+  <div class="container" id="main-content">
+    
+    <header>
+      <span class="badge-date">CONJUNCIÓ GALÀCTICA · 1/11/2026</span>
+      <h1>Xiqueteees! 💗✨</h1>
+      <p class="subtitle">Configureu ací el que vos abellix fer per al finde a Reus i ho deixem llest en un tres i no res!</p>
+    </header>
+
+    <!-- DIVENDRES -->
+    <div class="day-card">
+      <div class="day-header">
+        <div class="day-icon">🍸</div>
+        <div>
+          <div class="day-title">Divendres</div>
+          <small style="color:var(--text-muted)">Aterratge & catch-up</small>
+        </div>
+      </div>
+      <ul class="timeline">
+        <li class="timeline-item">Arribada a Reus cap al migdia 🚗💨</li>
+        <li class="timeline-item">Check-in a casa de David 🏠</li>
+        <li class="timeline-item">Vesprada de chill pel centre: social drinks & update xafarder, que tenim molt a contar-nos! 😂🥂</li>
+        <li class="timeline-item">
+          <strong>Sopar per ahí:</strong>
+          <div class="dinner-selector">
+            <span class="selector-label">Quin rotllo vos abellix per a sopar?</span>
+            <div class="pill-group" id="dinner-group">
+              <button class="pill-btn active" onclick="selectDinner('Tapes 🥖')">Tapes 🥖</button>
+              <button class="pill-btn" onclick="selectDinner('Pizza 🍕')">Pizza 🍕</button>
+              <button class="pill-btn" onclick="selectDinner('Mexicà 🌮')">Mexicà 🌮</button>
+              <button class="pill-btn" onclick="selectDinner('Tailandés 🍜')">Tailandés 🍜</button>
+            </div>
+          </div>
+        </li>
+        <li class="timeline-item">A dormirrr 😴💤</li>
+      </ul>
+    </div>
+
+    <!-- DISSABTE -->
+    <div class="day-card">
+      <div class="day-header">
+        <div class="day-icon">⭐</div>
+        <div>
+          <div class="day-title">Dissabte</div>
+          <small style="color:var(--text-muted)">Mercat + L'activitat estrella!</small>
+        </div>
+      </div>
+      <ul class="timeline">
+        <li class="timeline-item"><strong>Al matí:</strong> Volta pel mercat de Reus i esmorzar calentet 🥐☕</li>
+        <li class="timeline-item">
+          <strong>Tria el plan del dia:</strong>
+          <div class="options-grid">
+            
+            <!-- Opció 1 -->
+            <div class="option-card" onclick="selectActivity(1, '🏛️ Tarragona romana', 5)">
+              <div class="option-top">
+                <div class="option-title">🏛️ Tarragona romana</div>
+                <div class="option-price">des de 5 €</div>
+              </div>
+              <p class="option-desc">Tren directe (15 min) i passeig/visita pels monuments romans històrics.</p>
+            </div>
+
+            <!-- Opció 2 -->
+            <div class="option-card selected" onclick="selectActivity(2, '🧖🏻‍♀️ SPA a Montbrió del Camp', 37)">
+              <div class="option-top">
+                <div class="option-title">🧖🏻‍♀️ SPA Montbrió</div>
+                <div class="option-price">~37 €</div>
+              </div>
+              <p class="option-desc">A 10 min en cotxe: 2 hores de desconnexió en circuit termal de luxe.</p>
+            </div>
+
+            <!-- Opció 3 -->
+            <div class="option-card" onclick="selectActivity(3, '🏰 Modernisme a Reus', 9)">
+              <div class="option-top">
+                <div class="option-title">🏰 Modernisme a Reus</div>
+                <div class="option-price">~9 €</div>
+              </div>
+              <p class="option-desc">Visita a l'edifici de Domènech i Montaner (l'arquitecte de l'Hospital de Sant Pau).</p>
+            </div>
+
+            <!-- Opció 4 -->
+            <div class="option-card" onclick="selectActivity(4, '🍷 Celler & Tast de vins', 22)">
+              <div class="option-top">
+                <div class="option-title">🍷 Celler i tast de vins</div>
+                <div class="option-price" id="wine-price-badge">22 € / 32 €</div>
+              </div>
+              <p class="option-desc">Dissabte a les 11:00 h. Pots triar només tast o afegir visita completa:</p>
+              <div class="sub-options" onclick="event.stopPropagation()">
+                <button class="sub-btn active" id="sub-wine-1" onclick="selectWineOption(1)">Només tast (1 h) · 22 €</button>
+                <button class="sub-btn" id="sub-wine-2" onclick="selectWineOption(2)">Visita + Tast (1.5 h) · 32 €</button>
+              </div>
+            </div>
+
+            <!-- Opció 5 -->
+            <div class="option-card" onclick="selectActivity(5, '🎢 PortAventura', 60)">
+              <div class="option-top">
+                <div class="option-title">🎢 PortAventura</div>
+                <div class="option-price">~60 €</div>
+              </div>
+              <p class="option-desc">⚠️ Avis: un dels dies de més cues de l'any. Podrem pujar a un parell de cosetes i vore espectacles 😂 Si fa il·lusió, avant!</p>
+            </div>
+
+          </div>
+        </li>
+        <li class="timeline-item" style="margin-top:15px">Tornada a Reus i vesprada/nit improvisada amb el que ens abellisca fer! ✨</li>
+      </ul>
+    </div>
+
+    <!-- DIUMENGE -->
+    <div class="day-card">
+      <div class="day-header">
+        <div class="day-icon">🍸</div>
+        <div>
+          <div class="day-title">Diumenge</div>
+          <small style="color:var(--text-muted)">Calma i comiat</small>
+        </div>
+      </div>
+      <ul class="timeline">
+        <li class="timeline-item">Passeig tranquil i vermutet sagrat de Reus 🍸</li>
+        <li class="timeline-item">Dinar juntes i últimes rialles 🥘</li>
+        <li class="timeline-item">Goodbye time & abraçades galàctiques 🥹💗</li>
+      </ul>
+    </div>
+
+    <!-- RESUM I ENVIAR -->
+    <div class="summary-box">
+      <div class="summary-title">El teu vot per al finde ✨</div>
+      <div class="summary-text" id="summary-preview">Carregant resum...</div>
+      <button class="btn-share" onclick="copyToClipboard()">
+        <span>Copiar per a passar pel grup 💬</span>
+      </button>
+      <div class="copied-toast" id="copied-toast">✨ Copiat al porta-retalls! Pega-ho al WhatsApp!</div>
+    </div>
+
+  </div>
+
+  <script>
+    // 1. TRANSICIÓ INTRO (3 SEGONS)
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        const splash = document.getElementById('splash-screen');
+        const main = document.getElementById('main-content');
+        
+        splash.classList.add('hidden');
+        main.classList.add('show');
+      }, 3000);
+      
+      updateSummary();
+    });
+
+    // 2. ESTAT DEL PLANNER
+    let selectedDinner = 'Tapes 🥖';
+    let selectedActivityName = '🧖🏻‍♀️ SPA a Montbrió del Camp';
+    let selectedActivityPrice = 37;
+    let wineType = 1; // 1: Tast (22€), 2: Tast+visita (32€)
+
+    // Canviar sopar
+    function selectDinner(dinner) {
+      selectedDinner = dinner;
+      document.querySelectorAll('#dinner-group .pill-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent.includes(dinner.split(' ')[0]));
+      });
+      updateSummary();
+    }
+
+    // Canviar activitat
+    function selectActivity(index, name, price) {
+      const cards = document.querySelectorAll('.option-card');
+      cards.forEach((card, idx) => {
+        card.classList.toggle('selected', idx + 1 === index);
+      });
+
+      if (index === 4) {
+        selectedActivityName = wineType === 1 
+          ? '🍷 Tast de vins al celler (1 h)' 
+          : '🍷 Visita al celler + Tast de vins (1.5 h)';
+        selectedActivityPrice = wineType === 1 ? 22 : 32;
+      } else {
+        selectedActivityName = name;
+        selectedActivityPrice = price;
+      }
+
+      updateSummary();
+    }
+
+    // Subopció de vins
+    function selectWineOption(type) {
+      wineType = type;
+      document.getElementById('sub-wine-1').classList.toggle('active', type === 1);
+      document.getElementById('sub-wine-2').classList.toggle('active', type === 2);
+      
+      // Auto seleccionar la targeta de vins
+      selectActivity(4, '🍷 Celler', type === 1 ? 22 : 32);
+    }
+
+    // Actualitzar bloc resum
+    function updateSummary() {
+      const text = 
+`🪐 CONJUNCIÓ GALÀCTICA (1·11·26) 💗
+-----------------------------------
+🍕 Sopar Divendres: ${selectedDinner}
+⭐ Plan Dissabte: ${selectedActivityName} (~${selectedActivityPrice}€)
+🍸 Diumenge: Vermut, dinar & relax
+-----------------------------------
+Açò és el que més em mola! Com ho veieu? 🥰`;
+
+      document.getElementById('summary-preview').textContent = text;
+    }
+
+    // Copiar al porta-retalls
+    function copyToClipboard() {
+      const text = document.getElementById('summary-preview').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const toast = document.getElementById('copied-toast');
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2500);
+      });
+    }
+  </script>
+</body>
+</html>
